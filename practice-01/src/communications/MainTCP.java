@@ -1,6 +1,9 @@
-package communications.tcp;
+package communications;
 
 import algorithms.Algorithm;
+import algorithms.AlgorithmType;
+import algorithms.Vigenere;
+import utils.Key;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,25 +31,25 @@ public class MainTCP {
             switch (sendingProcess) {
                 case 2 -> {
                     if (communication.equals(Communication.UNICAST)) {
-                        P2.sendMessage(selectReceived(P3, P4), receiveMessage());
+                        P2.sendMessage(selectReceived(P3, P4), receiveMessage(algorithm));
                     } else {
-                        P2.setMessage(receiveMessage());
+                        P2.setMessage(receiveMessage(algorithm));
                     }
                     condition = false;
                 }
                 case 3 -> {
                     if (communication.equals(Communication.UNICAST)) {
-                        P3.sendMessage(selectReceived(P2, P4), receiveMessage());
+                        P3.sendMessage(selectReceived(P2, P4), receiveMessage(algorithm));
                     } else {
-                        P3.setMessage(receiveMessage());
+                        P3.setMessage(receiveMessage(algorithm));
                     }
                     condition = false;
                 }
                 case 4 -> {
                     if (communication.equals(Communication.UNICAST)) {
-                        P4.sendMessage(selectReceived(P2, P3), receiveMessage());
+                        P4.sendMessage(selectReceived(P2, P3), receiveMessage(algorithm));
                     } else {
-                        P4.setMessage(receiveMessage());
+                        P4.setMessage(receiveMessage(algorithm));
                     }
                     condition = false;
                 }
@@ -88,22 +91,30 @@ public class MainTCP {
         }
     }
 
-    /* TODO devo criar classes que fazem a encriptação e decrioptação de cada tipo de algoritmo de criptografia
+    /* TODO devo criar classes que fazem a encriptação e decriptação de cada tipo de algoritmo de criptografia
         e trocar a saída desse metodo pelo texto cifrado, assim envia o texto cifrado para cada processo
      */
-    public static Integer receiveMessage() {
-        System.out.print("Digite um valor entre 0 a 9: ");
+    public static String receiveMessage(Algorithm algorithm) {
+        System.out.print("Digite a mensagem a ser criptogradafa: ");
 
+        in.nextLine();
         var message = in.nextLine();
 
-        boolean condition = true;
-        while (condition) {
-            switch (message) {
-                case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" -> condition = false;
-                default -> message = in.nextLine();
+        while (true) {
+            switch (algorithm) {
+                case VIGENERE -> {
+                    AlgorithmType.setAlgorithm(Algorithm.VIGENERE);
+                    return Vigenere.encrypt(message, Key.getKey());
+                }
+                case VERNAM -> {
+                    //AlgorithmType.setAlgorithm(Algorithm.VERNAM);
+                    //return Vernam.encrypt(message, Key.getKey());
+                }
+                case AES_192 -> {
+                    //AlgorithmType.setAlgorithm(Algorithm.AES_192);
+                    //return AES192.encrypt(message, Key.getKey());
+                }
             }
         }
-
-        return Integer.parseInt(message);
     }
 }

@@ -6,10 +6,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server implements Runnable {
-    private int id;
-    private int port;
-    private Integer message;
-    private int amount;
+    private final int id;
+    private final int port;
+    private String message;
+    private final int amount;
 
     public Server(int id, int port) {
         this.id = id;
@@ -31,11 +31,11 @@ public class Server implements Runnable {
         return port;
     }
 
-    public Integer getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(Integer message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
@@ -50,21 +50,21 @@ public class Server implements Runnable {
             Socket socket = serverSocket.accept();
             DataInputStream inflow = new DataInputStream(socket.getInputStream());
 
-            this.setMessage(inflow.readInt());
-            System.out.println("P" + this.getId() + " Recebeu: [ " + this.getMessage() + " ]");
+            this.setMessage(inflow.readLine());
+            System.out.println("P" + this.getId() + " Central recebeu: [ " + this.getMessage() + " ]");
 
             inflow.close();
             socket.close();
             serverSocket.close();
 
-            System.out.println("P" + this.getId() + " Enviou: [ " + this.getMessage() + " ]");
+            System.out.println("P" + this.getId() + " Central enviou : [ " + this.getMessage() + " ]");
             for (int i = 0; i < this.getAmount(); i++) {
                 ServerSocket serverSocket2 = new ServerSocket(this.getPort());
                 Socket socket2 = serverSocket2.accept();
 
                 DataOutputStream outflow = new DataOutputStream(socket2.getOutputStream());
 
-                outflow.writeInt(this.getMessage());
+                outflow.writeBytes(this.getMessage());
 
                 outflow.close();
                 socket2.close();

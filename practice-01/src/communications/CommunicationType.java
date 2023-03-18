@@ -1,4 +1,4 @@
-package communications.tcp;
+package communications;
 
 public class CommunicationType {
     private static Communication communication;

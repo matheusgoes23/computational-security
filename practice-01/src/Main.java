@@ -1,6 +1,6 @@
 import algorithms.Algorithm;
-import communications.tcp.Communication;
-import communications.tcp.MainTCP;
+import communications.Communication;
+import communications.MainTCP;
 
 import java.util.Scanner;
 

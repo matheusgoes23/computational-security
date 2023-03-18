@@ -1,4 +1,4 @@
-package communications.tcp;
+package communications;
 
 public enum Communication {
     BROADCAST, UNICAST

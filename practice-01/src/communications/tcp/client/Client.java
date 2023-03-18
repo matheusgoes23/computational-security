@@ -1,16 +1,22 @@
 package communications.tcp.client;
 
-import java.io.DataOutputStream;
+import algorithms.Algorithm;
+import algorithms.AlgorithmType;
+import algorithms.Vernam;
+import algorithms.Vigenere;
+import utils.Key;
+
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.net.Socket;
 
 public class Client implements Runnable {
     private final int id;
     private final int centralPort;
-    private Integer message;
+    private String message;
     private final boolean condition;
 
-    public Client(int id, int centralPort, Integer message, boolean condition) {
+    public Client(int id, int centralPort, String message, boolean condition) {
         this.id = id;
         this.centralPort = centralPort;
         this.message = message;
@@ -31,11 +37,11 @@ public class Client implements Runnable {
         return centralPort;
     }
 
-    public Integer getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(Integer message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
@@ -61,14 +67,26 @@ public class Client implements Runnable {
             if (this.getMessage() != null) {
                 DataOutputStream outflow = new DataOutputStream(socket.getOutputStream());
 
-                System.out.println("P" + this.getId() + " Enviou: [ " + this.getMessage() + " ]");
-                outflow.writeInt(this.getMessage());
+                System.out.println("P" + this.getId() + " Enviou encriptada: [ " + this.getMessage() + " ]");
+                outflow.writeBytes(this.getMessage());
 
                 outflow.close();
             } else {
                 DataInputStream inflow = new DataInputStream(socket.getInputStream());
-                this.setMessage(inflow.readInt());
-                System.out.println("P" + this.getId() + " Recebeu: [ " + this.getMessage() + " ]");
+                this.setMessage(inflow.readLine());
+                System.out.println("P" + this.getId() + " Recebeu encriptada: [ " + this.getMessage() + " ]");
+
+                switch (AlgorithmType.getAlgorithm()) {
+                    case VIGENERE -> {
+                        System.out.println("P" + this.getId() + " Gerou mensagem descriptada: [ " + Vigenere.decrypt(this.getMessage(), Key.getKey()) + " ]");
+                    }
+                    case VERNAM -> {
+                        //System.out.println("P" + this.getId() + " Gerou mensagem descriptada: [ " + Vernam.decrypt(this.getMessage(), Key.getKey()) + " ]");
+                    }
+                    case AES_192 -> {
+                        //System.out.println("P" + this.getId() + " Gerou mensagem descriptada: [ " + AES192.decrypt(this.getMessage(), Key.getKey()) + " ]");
+                    }
+                }
 
                 inflow.close();
             }

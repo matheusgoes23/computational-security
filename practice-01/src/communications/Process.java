@@ -1,4 +1,4 @@
-package communications.tcp;
+package communications;
 
 import communications.tcp.client.Client;
 import communications.tcp.server.Server;
@@ -11,7 +11,7 @@ public class Process implements Runnable {
     Map<Integer, Process> processes = new HashMap<>();
     private final int id;
     private final int port;
-    private Integer message;
+    private String message;
     private final Communication communication = CommunicationType.getCommunication();
     private Process process;
 
@@ -28,11 +28,11 @@ public class Process implements Runnable {
         return port;
     }
 
-    public Integer getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(Integer message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
@@ -48,7 +48,7 @@ public class Process implements Runnable {
         return process;
     }
 
-    public void sendMessage(Process process, Integer message) {
+    public void sendMessage(Process process, String message) {
         this.process = process;
         this.message = message;
         this.getProcesses().remove(this.getId());
