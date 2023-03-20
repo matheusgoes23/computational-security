@@ -1,9 +1,10 @@
 package communications.tcp.client;
 
-import algorithms.Algorithm;
+import algorithms.AES192;
 import algorithms.AlgorithmType;
 import algorithms.Vernam;
 import algorithms.Vigenere;
+import utils.GeneratorsAES;
 import utils.Key;
 
 import java.io.DataInputStream;
@@ -81,10 +82,10 @@ public class Client implements Runnable {
                         System.out.println("P" + this.getId() + " Gerou mensagem descriptada: [ " + Vigenere.decrypt(this.getMessage(), Key.getKey()) + " ]");
                     }
                     case VERNAM -> {
-                        //System.out.println("P" + this.getId() + " Gerou mensagem descriptada: [ " + Vernam.decrypt(this.getMessage(), Key.getKey()) + " ]");
+                        System.out.println("P" + this.getId() + " Gerou mensagem descriptada: [ " + Vernam.decrypt(this.getMessage(), Key.getKey()) + " ]");
                     }
                     case AES_192 -> {
-                        //System.out.println("P" + this.getId() + " Gerou mensagem descriptada: [ " + AES192.decrypt(this.getMessage(), Key.getKey()) + " ]");
+                        System.out.println("P" + this.getId() + " Gerou mensagem descriptada: [ " + AES192.decrypt(this.getMessage(), GeneratorsAES.getGeneratedSecretKey()) + " ]");
                     }
                 }
 

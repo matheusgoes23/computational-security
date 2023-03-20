@@ -1,10 +1,15 @@
 package communications;
 
-import algorithms.Algorithm;
-import algorithms.AlgorithmType;
-import algorithms.Vigenere;
+import algorithms.*;
+import utils.GeneratorsAES;
 import utils.Key;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -12,7 +17,14 @@ import java.util.Scanner;
 public class MainTCP {
     static Scanner in = new Scanner(System.in);
 
-    public static void applyCommunication(Algorithm algorithm, Communication communication) {
+    public static void applyCommunication(Algorithm algorithm, Communication communication) throws
+            InvalidAlgorithmParameterException,
+            NoSuchPaddingException,
+            IllegalBlockSizeException,
+            NoSuchAlgorithmException,
+            BadPaddingException,
+            InvalidKeyException {
+
         CommunicationType.setCommunication(communication);
 
         Process P1 = new Process(1, 5001);
@@ -91,10 +103,15 @@ public class MainTCP {
         }
     }
 
-    /* TODO devo criar classes que fazem a encriptação e decriptação de cada tipo de algoritmo de criptografia
-        e trocar a saída desse metodo pelo texto cifrado, assim envia o texto cifrado para cada processo
-     */
-    public static String receiveMessage(Algorithm algorithm) {
+    // Faz a escolha do tipo de algoritmo de criptografia que deve usar no processo de comunicação
+    public static String receiveMessage(Algorithm algorithm) throws
+            NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException,
+            NoSuchPaddingException,
+            IllegalBlockSizeException,
+            BadPaddingException,
+            InvalidKeyException {
+
         System.out.print("Digite a mensagem a ser criptogradafa: ");
 
         in.nextLine();
@@ -107,12 +124,12 @@ public class MainTCP {
                     return Vigenere.encrypt(message, Key.getKey());
                 }
                 case VERNAM -> {
-                    //AlgorithmType.setAlgorithm(Algorithm.VERNAM);
-                    //return Vernam.encrypt(message, Key.getKey());
+                    AlgorithmType.setAlgorithm(Algorithm.VERNAM);
+                    return Vernam.encrypt(message, Key.getKey());
                 }
                 case AES_192 -> {
-                    //AlgorithmType.setAlgorithm(Algorithm.AES_192);
-                    //return AES192.encrypt(message, Key.getKey());
+                    AlgorithmType.setAlgorithm(Algorithm.AES_192);
+                    return AES192.encrypt(message, GeneratorsAES.getNewSecretKey(192));
                 }
             }
         }

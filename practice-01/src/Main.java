@@ -2,12 +2,25 @@ import algorithms.Algorithm;
 import communications.Communication;
 import communications.MainTCP;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class Main {
     static Scanner in = new Scanner(System.in);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws
+            InvalidAlgorithmParameterException,
+            NoSuchPaddingException,
+            IllegalBlockSizeException,
+            NoSuchAlgorithmException,
+            BadPaddingException,
+            InvalidKeyException {
+
         System.out.println("Escolha qual tipo de algoritmo de criptografia quer usar:" + "\nCifra de Vigenère: Digite 1" + "\nCifra de Vernam: Digite 2" + "\nAES 192: Digite 3");
 
         var algorithmType = in.nextLine();
@@ -41,7 +54,7 @@ public class Main {
         }
     }
 
-    private static void selectCommunicationType(Algorithm algorithm) {
+    private static void selectCommunicationType(Algorithm algorithm) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         System.out.println("Escolha qual tipo de comunicação quer usar:" + "\nBroadcast: Digite 1" + "\nUnicast: Digite 2");
 
         var communicationType = in.nextLine();
