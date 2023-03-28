@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Process implements Runnable {
-    private final int centralPort = 5001;
+    private final int centralPort = 5000;
     Map<Integer, Process> processes = new HashMap<>();
     private final int id;
     private final int port;
@@ -58,7 +58,8 @@ public class Process implements Runnable {
         return centralPort;
     }
 
-    public void connections(Process P2, Process P3, Process P4) {
+    public void connections(Process P1, Process P2, Process P3, Process P4) {
+        this.processes.put(P1.getId(), P1);
         this.processes.put(P2.getId(), P2);
         this.processes.put(P3.getId(), P3);
         this.processes.put(P4.getId(), P4);

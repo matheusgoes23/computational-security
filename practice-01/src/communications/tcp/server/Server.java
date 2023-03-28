@@ -51,13 +51,11 @@ public class Server implements Runnable {
             DataInputStream inflow = new DataInputStream(socket.getInputStream());
 
             this.setMessage(inflow.readLine());
-            System.out.println("P" + this.getId() + " Central recebeu: [ " + this.getMessage() + " ]");
 
             inflow.close();
             socket.close();
             serverSocket.close();
 
-            System.out.println("P" + this.getId() + " Central enviou : [ " + this.getMessage() + " ]");
             for (int i = 0; i < this.getAmount(); i++) {
                 ServerSocket serverSocket2 = new ServerSocket(this.getPort());
                 Socket socket2 = serverSocket2.accept();

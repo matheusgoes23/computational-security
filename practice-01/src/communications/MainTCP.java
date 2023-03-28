@@ -27,23 +27,32 @@ public class MainTCP {
 
         CommunicationType.setCommunication(communication);
 
+        Process P0 = new Process(0, 5000);
         Process P1 = new Process(1, 5001);
         Process P2 = new Process(2, 5002);
         Process P3 = new Process(3, 5003);
         Process P4 = new Process(4, 5004);
 
-        P1.connections(P2, P3, P4);
+        P0.connections(P1, P2, P3, P4);
 
-        System.out.println("Escolha qual processo deve enviar a mensagem:" + "\nP2: Digite 2" + "\nP3: Digite 3" + "\nP4: Digite 4");
+        System.out.println("Escolha qual processo deve enviar a mensagem:" + "\nP1: Digite 1" + "\nP2: Digite 2" + "\nP3: Digite 3" + "\nP4: Digite 4");
 
         int sendingProcess = in.nextInt();
 
         boolean condition = true;
         while (condition) {
             switch (sendingProcess) {
+                case 1 -> {
+                    if (communication.equals(Communication.UNICAST)) {
+                        P1.sendMessage(selectReceived(P2, P3, P4), receiveMessage(algorithm));
+                    } else {
+                        P1.setMessage(receiveMessage(algorithm));
+                    }
+                    condition = false;
+                }
                 case 2 -> {
                     if (communication.equals(Communication.UNICAST)) {
-                        P2.sendMessage(selectReceived(P3, P4), receiveMessage(algorithm));
+                        P2.sendMessage(selectReceived(P1, P3, P4), receiveMessage(algorithm));
                     } else {
                         P2.setMessage(receiveMessage(algorithm));
                     }
@@ -51,7 +60,7 @@ public class MainTCP {
                 }
                 case 3 -> {
                     if (communication.equals(Communication.UNICAST)) {
-                        P3.sendMessage(selectReceived(P2, P4), receiveMessage(algorithm));
+                        P3.sendMessage(selectReceived(P1, P2, P4), receiveMessage(algorithm));
                     } else {
                         P3.setMessage(receiveMessage(algorithm));
                     }
@@ -59,7 +68,7 @@ public class MainTCP {
                 }
                 case 4 -> {
                     if (communication.equals(Communication.UNICAST)) {
-                        P4.sendMessage(selectReceived(P2, P3), receiveMessage(algorithm));
+                        P4.sendMessage(selectReceived(P1, P2, P3), receiveMessage(algorithm));
                     } else {
                         P4.setMessage(receiveMessage(algorithm));
                     }
@@ -73,6 +82,7 @@ public class MainTCP {
         }
 
         List<Thread> processes = new ArrayList<>();
+        processes.add(new Thread(P0));
         processes.add(new Thread(P1));
         processes.add(new Thread(P2));
         processes.add(new Thread(P3));
@@ -83,11 +93,15 @@ public class MainTCP {
         }
     }
 
-    public static Process selectReceived(Process first, Process second) {
+    public static Process selectReceived(Process first, Process second, Process third) {
         int P1 = first.getId();
         int P2 = second.getId();
+        int P3 = third.getId();
 
-        System.out.println("Escolha qual processo deve receber a mensagem:" + "\nP" + first.getId() + ": Digite " + first.getId() + "\nP" + second.getId() + ": Digite " + second.getId());
+        System.out.println("Escolha qual processo deve receber a mensagem:"
+                + "\nP" + first.getId() + ": Digite " + first.getId()
+                + "\nP" + second.getId() + ": Digite " + second.getId()
+                + "\nP" + third.getId() + ": Digite " + third.getId());
 
         int receiptProcess = in.nextInt();
 
@@ -95,6 +109,8 @@ public class MainTCP {
             if (receiptProcess == first.getId()) {
                 return first;
             } else if (receiptProcess == second.getId()) {
+                return second;
+            } else if (receiptProcess == third.getId()) {
                 return second;
             } else {
                 System.out.println("Não existe esse processo. Tente outra vez!");

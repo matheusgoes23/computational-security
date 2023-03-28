@@ -57,7 +57,7 @@ public class Client implements Runnable {
                 if (this.getMessage() != null) {
                     Thread.sleep(1000);
                 } else {
-                    Thread.sleep(1000L * this.getId());
+                    Thread.sleep((1000L * this.getId()) + 1000L);
                 }
             } else {
                 Thread.sleep(4000L / this.getId());
