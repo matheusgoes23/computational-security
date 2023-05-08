@@ -34,7 +34,6 @@ public class Client {
                 switch (scanner.nextInt()) {
                     case 0 -> {
                         token = login(stubClient);
-                        System.out.println("TOKEN: " + token);
                         ClientView clientView = new ClientView();
                         clientView.start(stubClient, token);
                     }
@@ -68,7 +67,6 @@ public class Client {
                 System.err.println("Login ou senha inválidos! Tente novamente.");
                 System.out.println();
             }
-            System.out.println("TOKEN_IN_LOGIN: " + token);
         }
 
         return token;

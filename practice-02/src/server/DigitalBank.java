@@ -5,7 +5,6 @@ import utils.Account;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 public interface DigitalBank extends Remote {
     String authenticate(String login, String password) throws RemoteException, NoSuchAlgorithmException;
