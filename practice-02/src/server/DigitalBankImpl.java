@@ -1,33 +1,40 @@
 package server;
 
-import utils.*;
+import algorithms.RSA;
+import utils.Account;
+import utils.Data;
+import utils.InvestmentType;
+import utils.Token;
 
 import java.rmi.RemoteException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DigitalBankImpl implements DigitalBank {
 
     @Override
     public String authenticate(String login, String password) throws RemoteException, NoSuchAlgorithmException {
+        login = RSA.decrypt(login);
+        password = RSA.decrypt(password);
 
         Account account = Data.getAccountByLogin(login);
 
         if (account != null && account.getPassword().equals(password)) {
-            return Token.generateToken(account);
+            return RSA.encrypt(Token.generateToken(account));
         }
 
-        return null;
+        return RSA.encrypt(String.valueOf(-1));
     }
 
     @Override
-    public int createAccount(Account account, String token) {
+    public String createAccount(String encryptedAccount) {
+        Account account = new Account(RSA.decrypt(encryptedAccount));
+
         List<Account> accounts = Data.getAllAccounts();
         accounts.add(account);
         Data.updateAccounts(accounts);
-        return 1;
+        return RSA.encrypt("1");
     }
 
     @Override
@@ -39,53 +46,70 @@ public class DigitalBankImpl implements DigitalBank {
     }
 
     @Override
-    public Account findMyAccount(String token) throws RemoteException {
+    public String findMyAccount(String token) throws RemoteException {
+        token = RSA.decrypt(token);
+
         for (Account account : Data.getAllAccounts()) {
-            if (account.getNumber().equals(Token.getAccountNumber(token))) return account;
+            if (account.getNumber().equals(Token.getAccountNumber(token))) return RSA.encrypt(account.toString());
         }
-        return null;
+
+        return RSA.encrypt("-1");
     }
 
     @Override
-    public double withdraw(double amount, String token) {
+    public String withdraw(String encryptedAmount, String token) {
+        double amount = Double.parseDouble(RSA.decrypt(encryptedAmount));
+        token = RSA.decrypt(token);
+
         List<Account> accounts = Data.getAllAccounts();
         for (int i = 0; i < accounts.size(); i++) {
             if (accounts.get(i).getNumber().equals(Token.getAccountNumber(token))) {
-                if (accounts.get(i).getAmount() < amount) return 0;
+                if (accounts.get(i).getAmount() < amount) return RSA.encrypt("0");
                 accounts.get(i).setAmount(accounts.get(i).getAmount() - amount);
                 Data.updateAccounts(accounts);
-                return accounts.get(i).getAmount();
+                return RSA.encrypt(String.valueOf(accounts.get(i).getAmount()));
             }
-            return 0;
+            return RSA.encrypt("0");
         }
-        return -1;
+        return RSA.encrypt("-1");
     }
 
     @Override
-    public double deposit(double amount, String token) {
+    public String deposit(String encryptedAmount, String token) {
+        double amount = Double.parseDouble(RSA.decrypt(encryptedAmount));
+        token = RSA.decrypt(token);
+
         List<Account> accounts = Data.getAllAccounts();
         for (int i = 0; i < accounts.size(); i++) {
             if (accounts.get(i).getNumber().equals(Token.getAccountNumber(token))) {
                 accounts.get(i).setAmount(accounts.get(i).getAmount() + amount);
                 Data.updateAccounts(accounts);
-                return accounts.get(i).getAmount();
+                return RSA.encrypt(String.valueOf(accounts.get(i).getAmount()));
             }
         }
-        return 0;
+        return RSA.encrypt("0");
     }
 
     @Override
-    public double balance(String token) {
-        return findAccount(Token.getAccountNumber(token)).getAmount();
+    public String balance(String token) {
+        token = RSA.decrypt(token);
+
+        double result = findAccount(Token.getAccountNumber(token)).getAmount();
+
+        return RSA.encrypt(String.valueOf(result));
     }
 
     @Override
-    public int transfer(String numberToReceive, double amount, String token) {
+    public String transfer(String numberToReceive, String encryptedAmount, String token) {
+        numberToReceive = RSA.decrypt(numberToReceive);
+        double amount = Double.parseDouble(RSA.decrypt(encryptedAmount));
+        token = RSA.decrypt(token);
+
         List<Account> accounts = Data.getAllAccounts();
         Account accountToSend = findAccount(Token.getAccountNumber(token));
         Account accountReceive = findAccount(numberToReceive);
 
-        if (accountToSend == null || accountReceive == null) return 0;
+        if (accountToSend == null || accountReceive == null) return RSA.encrypt("0");
 
         accountToSend.setAmount(accountToSend.getAmount() - amount);
         accountReceive.setAmount(accountReceive.getAmount() + amount);
@@ -103,14 +127,17 @@ public class DigitalBankImpl implements DigitalBank {
         }
         if (success == 2) {
             Data.updateAccounts(accounts);
-            return 1;
+            return RSA.encrypt("1");
         } else {
-            return 0;
+            return RSA.encrypt("0");
         }
     }
 
     @Override
-    public String investInSavings(String token) throws RemoteException {
+    public String investInSavings(String token, String encryptedMonths) throws RemoteException {
+        token = RSA.decrypt(token);
+        int months = Integer.parseInt(RSA.decrypt(encryptedMonths));
+
         Account account = findAccount(Token.getAccountNumber(token));
 
         if (account.getInvestmentType().equals(InvestmentType.FIXED_INCOME)) {
@@ -123,11 +150,16 @@ public class DigitalBankImpl implements DigitalBank {
             Data.updateAccounts(accounts);
         }
 
-        return "Valor aplicado: " + account.getAmount() + "\nEm 3 meses renderá: " + new DecimalFormat("###.00").format(calculateSavingsInterest(account.getAmount(), 3)) + "\nEm 6 meses renderá: " + new DecimalFormat("###.00").format(calculateSavingsInterest(account.getAmount(), 6)) + "\nEm 12 meses renderá: " + new DecimalFormat("###.00").format(calculateSavingsInterest(account.getAmount(), 12));
+        String result = "Em " + months + " meses renderá: " + new DecimalFormat("###.00").format(calculateSavingsInterest(account.getAmount(), months));
+
+        return RSA.encrypt(result);
     }
 
     @Override
-    public String investInFixedIncome(String token) throws RemoteException {
+    public String investInFixedIncome(String token, String encryptedMonths) throws RemoteException {
+        token = RSA.decrypt(token);
+        int months = Integer.parseInt(RSA.decrypt(encryptedMonths));
+
         Account account = findAccount(Token.getAccountNumber(token));
 
         if (account.getInvestmentType().equals(InvestmentType.SAVINGS)) {
@@ -140,7 +172,9 @@ public class DigitalBankImpl implements DigitalBank {
             Data.updateAccounts(accounts);
         }
 
-        return "Valor aplicado: " + account.getAmount() + "\nEm 3 meses renderá: " + new DecimalFormat("###.00").format(calculateFixedIncomeInterest(account.getAmount(), 3)) + "\nEm 6 meses renderá: " + new DecimalFormat("###.00").format(calculateFixedIncomeInterest(account.getAmount(), 6)) + "\nEm 12 meses renderá: " + new DecimalFormat("###.00").format(calculateFixedIncomeInterest(account.getAmount(), 12));
+        String result = "Em " + months + " meses renderá: " + new DecimalFormat("###.00").format(calculateFixedIncomeInterest(account.getAmount(), months));
+
+        return RSA.encrypt(result);
     }
 
     static double calculateSavingsInterest(double amount, int mounth) {

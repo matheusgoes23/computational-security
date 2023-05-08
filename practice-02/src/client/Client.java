@@ -1,5 +1,6 @@
 package client;
 
+import algorithms.RSA;
 import client.view.ClientView;
 import server.DigitalBank;
 
@@ -7,13 +8,14 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Client {
 
     static Scanner scanner;
 
-    static String token = null;
+    static String token = "-1";
 
     public static void run() {
 
@@ -23,7 +25,9 @@ public class Client {
             DigitalBank stubClient = (DigitalBank) registry.lookup("DigitalBank");
 
             while (true) {
-                scanner  = new Scanner(System.in);
+                scanner = new Scanner(System.in);
+
+                RSA.generateKeyPair(); // Gerando um novo par de chaves para esse cliente
 
                 System.out.println(" --------------------------------------------");
                 System.out.println("|  [0] - FAZER LOGIN                         |");
@@ -45,7 +49,7 @@ public class Client {
                     default -> System.out.println("Comando inválido!");
                 }
 
-                token = null;
+                token = "-1";
             }
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
@@ -54,18 +58,18 @@ public class Client {
     }
 
     public static String login(DigitalBank stubClient) throws RemoteException, NoSuchAlgorithmException {
-        while (token == null) {
+        while (token.equals("-1")) {
             scanner = new Scanner(System.in);
             System.out.print("Digite seu login: ");
             String login = scanner.nextLine();
             System.out.print("Digite sua senha: ");
             String password = scanner.nextLine();
 
-            token = stubClient.authenticate(login, password);
+            token = RSA.decrypt(stubClient.authenticate(RSA.encrypt(login), RSA.encrypt(password)));
 
-            if (token == null) {
+            if (Objects.equals(token, "-1")) {
                 System.err.println("Login ou senha inválidos! Tente novamente.");
-                System.out.println();
+                scanner.nextLine();
             }
         }
 

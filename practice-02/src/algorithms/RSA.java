@@ -7,7 +7,7 @@ import java.util.Random;
 public abstract class RSA {
 
     // Tamanho da chave
-    private static final int KEY_SIZE = 128;
+    private static final int KEY_SIZE = 2048;
     // Definimos o expoente público como uma constante
     private static final BigInteger PUBLIC_EXPONENT = BigInteger.valueOf(65537);
 
@@ -25,8 +25,6 @@ public abstract class RSA {
         BigInteger phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)); // Calculando a função totiente de Euler
         publicKey = PUBLIC_EXPONENT; // Definindo a chave pública como o expoente público
         privateKey = publicKey.modInverse(phi); // Calculando a chave privada a partir da chave pública e da função totiente de Euler
-        System.out.println("Public: " + publicKey);
-        System.out.println("Private: " + privateKey);
     }
 
     // Método para criptografar uma mensagem

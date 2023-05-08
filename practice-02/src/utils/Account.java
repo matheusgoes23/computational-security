@@ -21,6 +21,19 @@ public class Account implements Serializable {
     public Account() {
     }
 
+    public Account(String accountString) {
+        String[] fields = accountString.split(",");
+        this.login = fields[0];
+        this.password = fields[1];
+        this.investmentType = InvestmentType.valueOf(fields[2]);
+        this.cpf = fields[3];
+        this.name = fields[4];
+        this.address = fields[5];
+        this.birth = fields[6];
+        this.phone = fields[7];
+        this.amount = Double.parseDouble(fields[8]);
+    }
+
     public String getLogin() {
         return login;
     }
@@ -95,5 +108,18 @@ public class Account implements Serializable {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public String toString() {
+        return login + "," +
+                password + "," +
+                investmentType + "," +
+                cpf + "," +
+                name + "," +
+                address + "," +
+                birth + "," +
+                phone + "," +
+                amount;
     }
 }
