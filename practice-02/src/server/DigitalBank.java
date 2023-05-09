@@ -4,10 +4,13 @@ import utils.Account;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
 
 public interface DigitalBank extends Remote {
-    String authenticate(String login, String password) throws RemoteException, NoSuchAlgorithmException;
+    String authenticate(String login, String password) throws RemoteException, NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException;
 
     String createAccount(String account) throws RemoteException;
 

@@ -12,9 +12,11 @@ public class ClientView {
     static Scanner scanner = new Scanner(System.in);
     static String token = "-1";
 
+    // Inicia a exibição do menu de opções para o cliente
     public void start(DigitalBank stubClient, String receivedToken) throws RemoteException {
         token = receivedToken;
 
+        // Exibe o menu de opções
         while (true) {
             System.out.println(" --------------------------------------------");
             System.out.println("|  [0] - SAIR DESSA CONTA                    |");
@@ -67,6 +69,7 @@ public class ClientView {
         }
     }
 
+    // Cria uma nova conta para um novo cliente
     public void createAccount(DigitalBank stubClient) throws RemoteException {
         Account account = new Account();
 
@@ -86,8 +89,8 @@ public class ClientView {
         System.out.print("Digite o telefone: ");
         account.setPhone(scanner.nextLine());
 
+        // Encriptando as informações do novo cliente para ser gerado
         String encryptedResult = stubClient.createAccount(RSA.encrypt(account.toString()));
-
         String result = RSA.decrypt(encryptedResult);
 
         if (result.equals("1")) {
@@ -99,11 +102,15 @@ public class ClientView {
         delay();
     }
 
+    // Lista a conta do atual cliente
     public void listMyAccount(DigitalBank stubClient) throws RemoteException {
 
         System.out.println("MEUS DADOS:");
 
+        // Encriptando o token do cliente atual para retornar a mensagem cifrada
         String encryptedResult = stubClient.findMyAccount(RSA.encrypt(token));
+
+        // Decifra a mensagem cifrada que contém as informações do cliente atual
         String result = RSA.decrypt(encryptedResult);
 
         if (!result.equals("-1")) {
@@ -129,15 +136,19 @@ public class ClientView {
         delay();
     }
 
+    // Saca um valor da conta do atual cliente
     public void withdraw(DigitalBank stubClient) throws RemoteException {
 
         System.out.println("SAQUE:");
         System.out.print("Digite o valor vai sacar: ");
         double amount = scanner.nextDouble();
 
+        // Encripta o valor a ser sacado e o token
         String encryptedAmount = stubClient.withdraw(
                 RSA.encrypt(String.valueOf(amount)),
                 RSA.encrypt(token));
+
+        // Decifra o valor atual após o saque
         amount = Double.parseDouble(RSA.decrypt(encryptedAmount));
 
         if (amount == -1) {
@@ -149,14 +160,16 @@ public class ClientView {
         delay();
     }
 
+    // Deposita um valor na conta do atual cliente
     public void deposit(DigitalBank stubClient) throws RemoteException {
 
         System.out.println("DEPOSITO:");
         System.out.print("Digite o valor vai depositar: ");
         double amount = scanner.nextDouble();
 
+        // Encripta o valor a ser depositado e o token
         String encryptedAmount = stubClient.deposit(RSA.encrypt(String.valueOf(amount)), RSA.encrypt(token));
-        amount = Double.parseDouble(RSA.decrypt(encryptedAmount));
+        amount = Double.parseDouble(RSA.decrypt(encryptedAmount)); // Decifra o valor atual após o saque
 
         if (amount > 0) {
             System.out.println("Depósito Realizado!\nAgora você tem: " + amount);
@@ -167,10 +180,12 @@ public class ClientView {
         delay();
     }
 
+    // Mostra o saldo do atual cliente
     public void getBalance(DigitalBank stubClient) throws RemoteException {
 
+        // Encripta token do cliente atual
         String encryptedResult = stubClient.balance(RSA.encrypt(token));
-        double result = Double.parseDouble(RSA.decrypt(encryptedResult));
+        double result = Double.parseDouble(RSA.decrypt(encryptedResult)); // Decifra o saldo atual do cliente
 
         System.out.println("SALDO:");
         System.out.println("Seu saldo é: " + result);
@@ -178,6 +193,7 @@ public class ClientView {
         delay();
     }
 
+    // Faz a transferência de um valor do cliente atual para outro cliente
     public void transfer(DigitalBank stubClient) throws RemoteException {
 
         System.out.println("TRANSFERÊNCIA:");
@@ -187,10 +203,10 @@ public class ClientView {
         double valor = scanner.nextDouble();
 
         String encryptedResult = stubClient.transfer(
-                RSA.encrypt(number),
-                RSA.encrypt(String.valueOf(valor)),
-                RSA.encrypt(token));
-        int result = Integer.parseInt(RSA.decrypt(encryptedResult));
+                RSA.encrypt(number), // Encripta número do cliente que vai receber o valor
+                RSA.encrypt(String.valueOf(valor)), // Encripta valor que vai ser transferido
+                RSA.encrypt(token)); // Encripta o token
+        int result = Integer.parseInt(RSA.decrypt(encryptedResult)); // Decifra retultado da transferência
 
         if (result == 1) {
             System.out.println("Transferência Realizada!");
@@ -201,14 +217,19 @@ public class ClientView {
         delay();
     }
 
+    // Mostra uma projeção o investimento do cliente na conta poupança
     public void investInSavings(DigitalBank stubClient) throws RemoteException {
 
+        // Encripta de decifra o valor do investimento em 3 meses
         String resultInThreeMonths = RSA.decrypt(stubClient.investInSavings(RSA.encrypt(token), RSA.encrypt("3")));
+        // Encripta de decifra o valor do investimento em 6 meses
         String resultInSixMonths = RSA.decrypt(stubClient.investInSavings(RSA.encrypt(token), RSA.encrypt("6")));
+        // Encripta de decifra o valor do investimento em 6 meses
         String resultInTwelveMonths = RSA.decrypt(stubClient.investInSavings(RSA.encrypt(token), RSA.encrypt("12")));
 
+        // Encripta o token
         String encryptedResult = stubClient.findMyAccount(RSA.encrypt(token));
-        String result = RSA.decrypt(encryptedResult);
+        String result = RSA.decrypt(encryptedResult); // Decifra a conta do clinte atual
 
         Account account = new Account(result);
 
@@ -221,14 +242,19 @@ public class ClientView {
         delay();
     }
 
+    // Mostra uma projeção o investimento do cliente na renda fixa
     public void investInFixedIncome(DigitalBank stubClient) throws RemoteException {
 
+        // Encripta de decifra o valor do investimento em 3 meses
         String resultInThreeMonths = RSA.decrypt(stubClient.investInFixedIncome(RSA.encrypt(token), RSA.encrypt("3")));
+        // Encripta de decifra o valor do investimento em 6 meses
         String resultInSixMonths = RSA.decrypt(stubClient.investInFixedIncome(RSA.encrypt(token), RSA.encrypt("6")));
+        // Encripta de decifra o valor do investimento em 12 meses
         String resultInTwelveMonths = RSA.decrypt(stubClient.investInFixedIncome(RSA.encrypt(token), RSA.encrypt("12")));
 
+        // Encripta o token
         String encryptedResult = stubClient.findMyAccount(RSA.encrypt(token));
-        String result = RSA.decrypt(encryptedResult);
+        String result = RSA.decrypt(encryptedResult); // Decifra a conta do clinte atual
 
         Account account = new Account(result);
 
